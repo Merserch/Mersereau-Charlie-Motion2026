@@ -9,16 +9,35 @@ public class Player : MonoBehaviour
     public Transform enemyTransform;
     public GameObject bombPrefab;
     public Transform bombsTransform;
-    public Vector2 spawnOffset;
+    private Transform playerTransform;
+    public Vector2 bombOffset;
+    public Vector2 trailOffset ;
+    public float bombSpacing = 1;
+    public int trailLength;
+
+    private void Start()
+    {
+        
+    }
 
     void Update()
     {
-
+        playerTransform = GetComponent<Transform>();
+        trailOffset.y = playerTransform.position.y - 1;
+        trailOffset.x = playerTransform.position.x;
         
         if (Keyboard.current.bKey.wasPressedThisFrame)
         {
 
-            SpawnBombAtOffset(spawnOffset);
+            SpawnBombAtOffset(bombOffset);
+        }
+
+        if (Keyboard.current.tKey.wasPressedThisFrame)
+        {
+            for(int i = 0; i < trailLength; i++)
+            {
+                SpawnBombTrail(i);
+            }
         }
         if (Keyboard.current.wKey.wasPressedThisFrame)
         {
@@ -34,9 +53,14 @@ public class Player : MonoBehaviour
         
     //    //return currentMousePosition;
     //}
-    public void SpawnBombAtOffset(Vector2 inOffset)
+    public void SpawnBombAtOffset(Vector2 spawnOffset)
     { 
-        object value = Instantiate(bombPrefab, Vector2.up + inOffset, Quaternion.identity, bombsTransform);
+        object value = Instantiate(bombPrefab, Vector2.up + spawnOffset, Quaternion.identity);
+    }
+
+    public void SpawnBombTrail(float spacing)
+    {
+        object value = Instantiate(bombPrefab, trailOffset * spacing, Quaternion.identity);
     }
 
     public static Vector2 WarpLocation(Vector2 location)
@@ -44,7 +68,7 @@ public class Player : MonoBehaviour
         //Take current position and calculate the destination based on the location of the enemy and the player's position
         Vector2 playerPosition = new Vector2(0, 0); // Assuming the player's position is at the origin (0, 0)
         Vector2 directionToEnemy = location - playerPosition;
-
+        Vector2 destination = new Vector2(0, 0);
         return destination;
     }
 }

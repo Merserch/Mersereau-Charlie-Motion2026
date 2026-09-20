@@ -9,9 +9,12 @@ public class Player : MonoBehaviour
     public Transform enemyTransform;
     public GameObject bombPrefab;
     public Transform bombsTransform;
-    private Transform playerTransform;
+    private Vector2 playerTransform;
+    private Vector2 offset;
     public Vector2 bombOffset;
-    public Vector2 trailOffset ;
+    public Vector2 trailOffset;
+    public float inDistance;
+    public Vector2 inLocation;
     public float bombSpacing = 1;
     public int trailLength;
 
@@ -22,14 +25,15 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        playerTransform = GetComponent<Transform>();
-        trailOffset.y = playerTransform.position.y - 1;
-        trailOffset.x = playerTransform.position.x;
+        playerTransform = transform.position;
+        trailOffset.y = playerTransform.y + 1;
+        trailOffset.x = playerTransform.x + 1;
+        
         
         if (Keyboard.current.bKey.wasPressedThisFrame)
         {
-
-            SpawnBombAtOffset(bombOffset);
+            offset = RandomDiagonal();
+            SpawnBombAtOffset();
         }
 
         if (Keyboard.current.tKey.wasPressedThisFrame)
@@ -53,9 +57,11 @@ public class Player : MonoBehaviour
         
     //    //return currentMousePosition;
     //}
-    public void SpawnBombAtOffset(Vector2 spawnOffset)
+    public void SpawnBombAtOffset()
     { 
-        object value = Instantiate(bombPrefab, Vector2.up + spawnOffset, Quaternion.identity);
+        inLocation.x = transform.position.x + (offset.x * inDistance); 
+        inLocation.y = transform.position.y + (offset.y * inDistance);
+        Instantiate(bombPrefab, inLocation, Quaternion.identity);
     }
 
     public void SpawnBombTrail(float spacing)
@@ -71,4 +77,28 @@ public class Player : MonoBehaviour
         Vector2 destination = new Vector2(0, 0);
         return destination;
     }
+    
+    public static Vector2 RandomDiagonal()
+    {
+        float xVal = Random.Range(0f, 1f);
+        if (xVal < 0.5)
+        {
+            xVal = -1;
+        }
+        else
+        {
+            xVal = 1;
+        }
+        float yVal = Random.Range(0f, 1f);
+        if (yVal < 0.5)
+        {
+            yVal = -1;
+        }
+        else
+        {
+            yVal = 1;
+        }
+        return new Vector2(xVal, yVal);
+    }
+    
 }

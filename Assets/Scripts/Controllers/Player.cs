@@ -9,7 +9,6 @@ public class Player : MonoBehaviour
     public Transform enemyTransform;
     public GameObject bombPrefab;
     public Transform bombsTransform;
-    private Vector2 playerTransform;
     private Vector2 offset;
     public Vector2 bombOffset;
     public Vector2 trailOffset;
@@ -25,9 +24,8 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        playerTransform = transform.position;
-        trailOffset.y = playerTransform.y + 1;
-        trailOffset.x = playerTransform.x + 1;
+        trailOffset.y = transform.position.y+ 1;
+        trailOffset.x = transform.position.x + 1;
         
         
         if (Keyboard.current.bKey.wasPressedThisFrame)
@@ -46,7 +44,8 @@ public class Player : MonoBehaviour
         if (Keyboard.current.wKey.wasPressedThisFrame)
         {
             //call warplocation with enemyTransform.position
-            Vector2 warpPosition = WarpLocation(enemyTransform.position);
+            Vector2 warpPosition = WarpLocation(enemyTransform);
+            transform.position = warpPosition;
         }
     }
     
@@ -66,16 +65,14 @@ public class Player : MonoBehaviour
 
     public void SpawnBombTrail(float spacing)
     {
-        object value = Instantiate(bombPrefab, trailOffset * spacing, Quaternion.identity);
+        Instantiate(bombPrefab, trailOffset * spacing, Quaternion.identity);
     }
 
-    public static Vector2 WarpLocation(Vector2 location)
+    public Vector2 WarpLocation(Transform enemy)
     {
         //Take current position and calculate the destination based on the location of the enemy and the player's position
-        Vector2 playerPosition = new Vector2(0, 0); // Assuming the player's position is at the origin (0, 0)
-        Vector2 directionToEnemy = location - playerPosition;
-        Vector2 destination = new Vector2(0, 0);
-        return destination;
+        Vector2 directionToEnemy = new Vector2(enemy.position.x - transform.position.x, enemy.position.y - transform.position.y);
+        return directionToEnemy;
     }
     
     public static Vector2 RandomDiagonal()

@@ -10,9 +10,10 @@ public class Stars : MonoBehaviour
     public int numberOfStars = 1;
     public float xMaxRange;
     public float yMinRange;
-    public List<Vector2> starTransforms;
+    public List<Vector3> starTransforms;
     public float drawingTime;
     public Vector3 drawingPoint;
+    public int currentStar = 0;
 
     private void Start()
     {
@@ -33,11 +34,21 @@ public class Stars : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        DrawConstellation();
+        if (currentStar < numberOfStars)
+        {
+            DrawConstellation();
+        }
+        else
+        {
+            currentStar = 0;
+        }
     }
 
     private void DrawConstellation()
     {
-        
+        //move a point from current position towards star
+        drawingPoint += Time.deltaTime * drawingTime * (starTransforms[currentStar + 1] - drawingPoint).normalized;
+        //draw a line from currentStar to current position
+        Debug.DrawLine(starTransforms[currentStar], drawingPoint, Color.red);
     }
 }

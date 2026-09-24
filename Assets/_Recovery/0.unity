@@ -282,6 +282,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2911842098934190716, guid: 462add3d0f7c62a4682e9c053b00ec93, type: 3}
+      propertyPath: arrivalDistance
+      value: 0.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911842098934190716, guid: 462add3d0f7c62a4682e9c053b00ec93, type: 3}
       propertyPath: maxFloatDistance
       value: 20
       objectReference: {fileID: 0}
@@ -427,58 +431,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: abc125f00ae369940b2c5c0275186637, type: 3}
---- !u!1 &1756896162
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1756896164}
-  - component: {fileID: 1756896163}
-  m_Layer: 0
-  m_Name: Stars
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1756896163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1756896162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e56a6fe5cb80984ea0622b663116246, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Stars
-  stars: {fileID: 0}
-  numberOfStars: 1
-  xMaxRange: 0
-  yMinRange: 0
-  starTransforms: []
-  drawingTime: 0
-  drawingPoint: {x: 0, y: 0, z: 0}
-  currentStar: 0
---- !u!4 &1756896164
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1756896162}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.43587, y: -0.53032, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -487,4 +439,3 @@ SceneRoots:
   - {fileID: 1648764717}
   - {fileID: 218786296}
   - {fileID: 1453980590}
-  - {fileID: 1756896164}

@@ -10,21 +10,31 @@ public class Player : MonoBehaviour
     public GameObject bombPrefab;
     public Transform bombsTransform;
     private Vector2 offset;
+    public int maxSpeed = 2;
+    
     public Vector2 bombOffset;
     public Vector2 trailOffset;
     public float inDistance;
     public Vector2 inLocation;
     public float bombSpacing = 1;
     public int trailLength;
+    public Vector3 currentVelocity =  Vector3.zero;
+    public float accelerationTime = 3;
+    public float currentAcceleration;
+    public float decelerationTime = 3;
+    public float deceleration = 1f;
 
     private void Start()
     {
-        
+        currentAcceleration = maxSpeed / accelerationTime;
+        deceleration =  maxSpeed / decelerationTime;
     }
 
     void Update()
     {
-        trailOffset.y = transform.position.y+ 1;
+        PlayerMovement();
+        
+        trailOffset.y = transform.position.y + 1;
         trailOffset.x = transform.position.x + 1;
         
         
@@ -33,7 +43,6 @@ public class Player : MonoBehaviour
             offset = RandomDiagonal();
             SpawnBombAtOffset();
         }
-
         if (Keyboard.current.tKey.wasPressedThisFrame)
         {
             for(int i = 0; i < trailLength; i++)
@@ -41,7 +50,7 @@ public class Player : MonoBehaviour
                 SpawnBombTrail(i);
             }
         }
-        if (Keyboard.current.wKey.wasPressedThisFrame)
+        if (Keyboard.current.qKey.wasPressedThisFrame)
         {
             //call warplocation with enemyTransform.position
             Vector2 warpPosition = WarpLocation(enemyTransform);
@@ -97,5 +106,50 @@ public class Player : MonoBehaviour
         }
         return new Vector2(xVal, yVal);
     }
-    
+
+    public void PlayerMovement()
+    {
+        Vector3 accelerationDirection = Vector3.zero;
+        if (Keyboard.current.wKey.isPressed)
+        {
+            accelerationDirection += (Vector3.up * maxSpeed);
+            //moves the player one unit up over one second
+        }
+        if (Keyboard.current.aKey.isPressed)
+        {
+            accelerationDirection += (Vector3.left * maxSpeed);
+            //moves the player one unit left over one second
+        }
+        if (Keyboard.current.sKey.isPressed)
+        {
+            accelerationDirection += (Vector3.down * maxSpeed);
+            //moves the player one unit down over one second
+        }
+        if (Keyboard.current.dKey.isPressed)
+        {
+            accelerationDirection += (Vector3.right * maxSpeed);
+            //moves the player one unit right over one second
+        }
+        currentVelocity += accelerationDirection.normalized * (currentAcceleration * Time.deltaTime);
+        if (!Keyboard.current.wKey.isPressed && !Keyboard.current.aKey.isPressed && !Keyboard.current.dKey.isPressed &&
+            !Keyboard.current.sKey.isPressed)
+        {
+            currentVelocity -= currentVelocity.normalized * (deceleration * Time.deltaTime);
+        }
+        
+        transform.position = transform.position + currentVelocity * Time.deltaTime;
+        
+        if (currentVelocity.magnitude > maxSpeed)
+        {
+            currentVelocity = currentVelocity.normalized * maxSpeed;
+        }
+
+        if (currentVelocity.magnitude < 0.00001f)
+        {
+            currentVelocity *= 0;
+        }
+        
+        
+    }
+
 }

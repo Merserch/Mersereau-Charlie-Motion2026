@@ -88,22 +88,14 @@ public class Player : MonoBehaviour
     {
         float xVal = Random.Range(0f, 1f);
         if (xVal < 0.5)
-        {
-            xVal = -1;
-        }
+        { xVal = -1; }
         else
-        {
-            xVal = 1;
-        }
+        { xVal = 1; }
         float yVal = Random.Range(0f, 1f);
         if (yVal < 0.5)
-        {
-            yVal = -1;
-        }
+        { yVal = -1; }
         else
-        {
-            yVal = 1;
-        }
+        { yVal = 1; }
         return new Vector2(xVal, yVal);
     }
 
@@ -113,37 +105,45 @@ public class Player : MonoBehaviour
         if (Keyboard.current.wKey.isPressed)
         {
             accelerationDirection += (Vector3.up * maxSpeed);
-            //moves the player one unit up over one second
+            //add upward acceleration
         }
         if (Keyboard.current.aKey.isPressed)
         {
             accelerationDirection += (Vector3.left * maxSpeed);
-            //moves the player one unit left over one second
+            //add leftward acceleration
         }
         if (Keyboard.current.sKey.isPressed)
         {
             accelerationDirection += (Vector3.down * maxSpeed);
-            //moves the player one unit down over one second
+            //add downward acceleration
         }
         if (Keyboard.current.dKey.isPressed)
         {
             accelerationDirection += (Vector3.right * maxSpeed);
-            //moves the player one unit right over one second
+            //add rightward acceleration
         }
+        
+        //apply all acceleration values in a normalized vector to the current velocity vector,
+        //   multiplied by the amount of time we want it to take to reach the maximum speed of acceleration.
         currentVelocity += accelerationDirection.normalized * (currentAcceleration * Time.deltaTime);
+        
+        //when no buttons are pressed, apply drag that decelerates the player
         if (!Keyboard.current.wKey.isPressed && !Keyboard.current.aKey.isPressed && !Keyboard.current.dKey.isPressed &&
             !Keyboard.current.sKey.isPressed)
         {
             currentVelocity -= currentVelocity.normalized * (deceleration * Time.deltaTime);
         }
         
+        //move the player at the projected velocity, accounting for time
         transform.position = transform.position + currentVelocity * Time.deltaTime;
         
+        //cap the speed at the maximum after calculating a higher value
         if (currentVelocity.magnitude > maxSpeed)
         {
             currentVelocity = currentVelocity.normalized * maxSpeed;
         }
-
+        
+        //set the speed to zero if it's very close to it
         if (currentVelocity.magnitude < 0.00001f)
         {
             currentVelocity *= 0;

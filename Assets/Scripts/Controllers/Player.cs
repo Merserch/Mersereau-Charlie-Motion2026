@@ -7,6 +7,8 @@ public class Player : MonoBehaviour
 {
     public List<Transform> asteroidTransforms;
     public Transform enemyTransform;
+    public Vector2 enemyVector;
+    
     public GameObject bombPrefab;
     public Transform bombsTransform;
     private Vector2 offset;
@@ -24,15 +26,30 @@ public class Player : MonoBehaviour
     public float decelerationTime = 3;
     public float deceleration = 1f;
 
+    // radar stuff
+    public List<float> angles = new List<float>();
+    
+    float degInRadians;
+    Vector2 lineEnd;
+    Vector2 lineStart;
+    public float currentRadius = 1;
+    public Vector2 currentOrigin =  Vector2.zero;
+    
     private void Start()
     {
+        CalculatePointsOfRadar();
         currentAcceleration = maxSpeed / accelerationTime;
         deceleration =  maxSpeed / decelerationTime;
+
     }
 
     void Update()
     {
+        
+        
+        CalculatePointsOfRadar();
         PlayerMovement();
+        DrawRadarCircle();
         
         trailOffset.y = transform.position.y + 1;
         trailOffset.x = transform.position.x + 1;
@@ -150,6 +167,48 @@ public class Player : MonoBehaviour
         }
         
         
+    }
+
+    void CalculatePointsOfRadar()
+    {
+        for (int i = 0; i < angles.Count; i++)
+        {
+            angles[i] = i * (360/angles.Count);
+        }
+    }
+
+    void DrawRadarCircle()
+    {
+        enemyVector = new  Vector2(enemyTransform.position.x, enemyTransform.position.y);
+        for (int i = 0; i < angles.Count; i++)
+        {
+            currentOrigin = transform.position;
+            int jPoint = i + 1;
+            if (jPoint < angles.Count)
+            {
+                jPoint = 0;
+            }
+            float currentAngle = angles[i];
+            float destinationAngle = angles[jPoint];
+            float currentInRadians = currentAngle * Mathf.Deg2Rad;
+            float destinationInRadians = destinationAngle * Mathf.Deg2Rad;
+            float yVali = Mathf.Sin(currentInRadians);
+            float xVali = Mathf.Cos(currentInRadians);
+            float yValj = Mathf.Sin(destinationInRadians);
+            float xValj = Mathf.Cos(destinationInRadians);
+            lineStart =  (new Vector2(xVali, yVali) * currentRadius) + currentOrigin;
+            lineEnd = (new Vector2(xValj, yValj) * currentRadius) + currentOrigin;
+
+            if (enemyTransform.position.magnitude < currentRadius)
+            {
+                Debug.DrawLine(lineStart, lineEnd, Color.red);
+            }
+            else
+            {
+                Debug.DrawLine(lineStart, lineEnd, Color.green);
+            }
+            
+        }
     }
 
 }

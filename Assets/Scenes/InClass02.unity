@@ -119,6 +119,65 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &36332798
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 36332800}
+  - component: {fileID: 36332799}
+  m_Layer: 0
+  m_Name: AngleTest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &36332799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36332798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49a8bd8c98b2442818ea1db61510965b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AngleTest
+  angles:
+  - 15
+  - 45
+  - 85
+  - 105
+  - 170
+  - 190
+  - 235
+  - 250
+  - 300
+  - 340
+  currentAngle: 0
+  currentAngleIndex: 0
+  currentRadius: 1
+  currentOrigin: {x: 0, y: 0}
+--- !u!4 &36332800
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36332798}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.43587, y: -0.53032, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &82057281
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,6 +582,10 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6890330259706833056, guid: abc125f00ae369940b2c5c0275186637, type: 3}
+      propertyPath: angles.Array.size
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6890330259706833056, guid: abc125f00ae369940b2c5c0275186637, type: 3}
       propertyPath: currentVelocity.x
       value: 0
       objectReference: {fileID: 0}
@@ -540,3 +603,4 @@ SceneRoots:
   - {fileID: 218786296}
   - {fileID: 1453980590}
   - {fileID: 82057284}
+  - {fileID: 36332800}

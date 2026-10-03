@@ -1,7 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Quaternion = UnityEngine.Quaternion;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 public class Player : MonoBehaviour
 {
@@ -10,10 +14,12 @@ public class Player : MonoBehaviour
     public Vector2 enemyVector;
     
     public GameObject bombPrefab;
+    public GameObject powerupPrefab;
     public Transform bombsTransform;
     private Vector2 offset;
     public int maxSpeed = 2;
-    
+
+    public int numberOfPowerups = 5;
     public Vector2 bombOffset;
     public Vector2 trailOffset;
     public float inDistance;
@@ -28,15 +34,18 @@ public class Player : MonoBehaviour
 
     // radar stuff
     public List<float> angles = new List<float>();
-    
     float degInRadians;
     Vector2 lineEnd;
     Vector2 lineStart;
-    public float currentRadius = 1;
+    public float currentRadius = 3f;
     public Vector2 currentOrigin =  Vector2.zero;
+    
+    // powerup stuff
+    Vector2 powerupSpawn;
     
     private void Start()
     {
+        SpawnPowerups();
         CalculatePointsOfRadar();
         currentAcceleration = maxSpeed / accelerationTime;
         deceleration =  maxSpeed / decelerationTime;
@@ -50,6 +59,9 @@ public class Player : MonoBehaviour
         CalculatePointsOfRadar();
         PlayerMovement();
         DrawRadarCircle();
+        
+        currentOrigin = transform.position; //wherever you are, that's where the origin is
+
         
         trailOffset.y = transform.position.y + 1;
         trailOffset.x = transform.position.x + 1;
@@ -72,6 +84,12 @@ public class Player : MonoBehaviour
             //call warplocation with enemyTransform.position
             Vector2 warpPosition = WarpLocation(enemyTransform);
             transform.position = warpPosition;
+        }
+
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            //spawn powerups
+            SpawnPowerups();
         }
     }
     
@@ -179,35 +197,54 @@ public class Player : MonoBehaviour
 
     void DrawRadarCircle()
     {
+        //get the position of the enemy for reference
         enemyVector = new  Vector2(enemyTransform.position.x, enemyTransform.position.y);
+        
+        //calculate the lines between each point
         for (int i = 0; i < angles.Count; i++)
         {
-            currentOrigin = transform.position;
-            int jPoint = i + 1;
-            if (jPoint < angles.Count)
+            int jPoint = i + 1; //we have an i index, j should be the next index
+            if (jPoint == angles.Count)
             {
-                jPoint = 0;
+                jPoint = 0; //and if we go over the count, connect the highest number to the lowest number, 0
             }
-            float currentAngle = angles[i];
-            float destinationAngle = angles[jPoint];
-            float currentInRadians = currentAngle * Mathf.Deg2Rad;
-            float destinationInRadians = destinationAngle * Mathf.Deg2Rad;
-            float yVali = Mathf.Sin(currentInRadians);
-            float xVali = Mathf.Cos(currentInRadians);
-            float yValj = Mathf.Sin(destinationInRadians);
-            float xValj = Mathf.Cos(destinationInRadians);
-            lineStart =  (new Vector2(xVali, yVali) * currentRadius) + currentOrigin;
-            lineEnd = (new Vector2(xValj, yValj) * currentRadius) + currentOrigin;
-
-            if (enemyTransform.position.magnitude < currentRadius)
+            float currentAngle = angles[i]; //set the first angle
+            float destinationAngle = angles[jPoint]; //set the second angle
+            float currentInRadians = currentAngle * Mathf.Deg2Rad; //convert first to radians
+            float destinationInRadians = destinationAngle * Mathf.Deg2Rad; //convert second to radians
+            float yVali = Mathf.Sin(currentInRadians); //first y
+            float xVali = Mathf.Cos(currentInRadians); //first x
+            float yValj = Mathf.Sin(destinationInRadians); //first y
+            float xValj = Mathf.Cos(destinationInRadians); //first x
+            lineStart =  (new Vector2(xVali, yVali) * currentRadius) + currentOrigin; //set the first point in relation to the origin
+            lineEnd = (new Vector2(xValj, yValj) * currentRadius) + currentOrigin; //set the second point in relation to the origin
+            
+            if (Vector2.Distance(transform.position, enemyTransform.position) < currentRadius) //if the distance between the two is less than the radius...
             {
-                Debug.DrawLine(lineStart, lineEnd, Color.red);
+                Debug.DrawLine(lineStart, lineEnd, Color.red); //it's red
             }
-            else
+            else 
             {
-                Debug.DrawLine(lineStart, lineEnd, Color.green);
+                Debug.DrawLine(lineStart, lineEnd, Color.green); //otherwise it's green
             }
             
+        }
+    }
+
+    public void SpawnPowerups()
+    {
+        float powerupRadius = currentRadius;
+        float powerupAngle;
+        float powerupRadians;
+        for (int i = 1; i <= numberOfPowerups; i++)
+        {
+            powerupAngle = i * (360 / numberOfPowerups);
+            powerupRadians = powerupAngle * Mathf.Deg2Rad;
+            float xVal = Mathf.Cos(powerupRadians);
+            float yVal = Mathf.Sin(powerupRadians);
+            powerupSpawn = (new Vector2(xVal, yVal) * powerupRadius) + currentOrigin;
+            Instantiate(powerupPrefab, powerupSpawn, Quaternion.identity);
+            Debug.Log("I tried to spawn powerup #" + i);
         }
     }
 

@@ -16,7 +16,6 @@ public class AngleTest : MonoBehaviour
     void Start()
     {
         
-        float fortyfiveDegree = 45f;
         float twoPiRadians = 2 * Mathf.PI;
         
         

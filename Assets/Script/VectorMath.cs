@@ -1,6 +1,9 @@
+using System.Numerics;
 using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 public class VectorMath : MonoBehaviour
 {
@@ -46,6 +49,18 @@ public class VectorMath : MonoBehaviour
     {
         return Mathf.Sqrt(vector.x * vector.x + vector.y * vector.y);
     }
+    
+    //convert from a vector to an angle based around the x-axis
+    public static float VectorToAngle(Vector3 vector)
+    {
+        float angle = Mathf.Atan2(vector.y, vector.x) * Mathf.Rad2Deg;
+        return angle - 90f;
+    }
 
+    public static float VectorDot(Vector3 a, Vector3 b)
+    {
+        float dotProduct = a.x * b.x + a.y * b.y;
+        return dotProduct;
+    }
     
 }

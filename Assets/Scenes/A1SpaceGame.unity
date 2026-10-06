@@ -141,7 +141,12 @@ MonoBehaviour:
   currentAcceleration: 0
   decelerationTime: 3
   deceleration: 1
+  defaultSpeed: 1
   maxSpeed: 2
+  boostSpeed: 3
+  boostMeter: 0
+  cooldownMeter: 0
+  exhaustMeter: 0
 --- !u!1001 &371863183
 PrefabInstance:
   m_ObjectHideFlags: 0

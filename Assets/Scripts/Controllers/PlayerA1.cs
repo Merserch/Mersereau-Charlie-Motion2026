@@ -18,7 +18,8 @@ public class PlayerA1 : MonoBehaviour
     public float cooldownMeter;
     float boostExhaust = 3f;
     public float exhaustMeter;
-    
+    public float rotationSpeed = 90f;
+    Vector3 rotationVector = Vector3.zero;
 
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -60,22 +61,22 @@ public class PlayerA1 : MonoBehaviour
         Vector3 accelerationDirection = Vector3.zero;
         if (Keyboard.current.wKey.isPressed)
         {
-            accelerationDirection += (Vector3.up * maxSpeed);
+            accelerationDirection += (transform.up * maxSpeed);
             //add upward acceleration
         }
         if (Keyboard.current.aKey.isPressed)
         {
-            accelerationDirection += (Vector3.left * maxSpeed);
+            Rotate(-transform.right);
             //add leftward acceleration
         }
         if (Keyboard.current.sKey.isPressed)
         {
-            accelerationDirection += (Vector3.down * maxSpeed);
+            accelerationDirection += (-transform.up * maxSpeed);
             //add downward acceleration
         }
         if (Keyboard.current.dKey.isPressed)
         {
-            accelerationDirection += (Vector3.right * maxSpeed);
+            Rotate(transform.right);
             //add rightward acceleration
         }
         
@@ -133,6 +134,22 @@ public class PlayerA1 : MonoBehaviour
         if (exhaustMeter <= 0f)
         {
             exhaustMeter = boostExhaust;
+        }
+    }
+    
+    void Rotate(Vector3 direction)
+    {
+        
+        float rightTurn = VectorMath.VectorDot(direction, transform.right);
+        
+        if (rightTurn >= 0) 
+        {
+            
+            transform.eulerAngles -= Vector3.forward * (rotationSpeed * Time.deltaTime);
+        }
+        else
+        {
+            transform.eulerAngles += Vector3.forward * (rotationSpeed * Time.deltaTime);
         }
     }
 }

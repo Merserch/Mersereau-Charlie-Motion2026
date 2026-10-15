@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerA1 : MonoBehaviour
 {
@@ -16,12 +17,14 @@ public class PlayerA1 : MonoBehaviour
     public float boostMeter;
     public float boostCooldown = 1f;
     public float cooldownMeter;
-    bool onCooldown = false;
+    public bool onCooldown = false;
     public float boostExhaust = 2f;
     public float exhaustMeter;
-    bool onExhaust = false;
+    public bool onExhaust = false;
     public float rotationSpeed = 90f;
     Vector3 rotationVector = Vector3.zero;
+    public Image fillColor;
+    public Slider boostSlider;
 
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -41,6 +44,7 @@ public class PlayerA1 : MonoBehaviour
     void Update()
     {
         PlayerMovement();
+        Slider();
     }
 
     void PlayerMovement()
@@ -59,20 +63,26 @@ public class PlayerA1 : MonoBehaviour
         {
             onCooldown = true;
         }
-
-        //cooldown mode runs the cooldown method undil it is turned off, which it is within the method
-        if (onCooldown)
-        {
-            Cooldown();
-        }
         
         //Logic for exhaust mechanic
         if (onExhaust)
         {
+            fillColor.color = Color.red;
             Exhaust();
         }
+        else
+        {
+            fillColor.color = Color.green;
+        }
+        
+        //cooldown mode runs the cooldown method undil it is turned off, which it is within the method
+        if (onCooldown)
+        {
+            fillColor.color = Color.grey;
+            Cooldown();
+        }
 
-        //when the exhaust is finished, boost can be charged
+        //when the exhaust is finished, boost can be recharged
         if (maxSpeed == defaultSpeed && boostMeter < boostMax && exhaustMeter >= boostExhaust)
         {
             boostMeter += Time.deltaTime;
@@ -137,6 +147,11 @@ public class PlayerA1 : MonoBehaviour
         
     }
 
+    void Slider()
+    {
+        boostSlider.value = boostMeter/boostMax;
+    }
+
     void Boost()
     {
         boostMeter -= Time.deltaTime;
@@ -144,6 +159,7 @@ public class PlayerA1 : MonoBehaviour
         if (boostMeter <= 0f)
         {
             onExhaust = true;
+            boostMeter = 0f;
         }
     }
 

@@ -12,12 +12,14 @@ public class PlayerA1 : MonoBehaviour
     public float defaultSpeed = 1;
     public float maxSpeed;
     public float boostSpeed = 3;
-    float boostMax = 10f;
+    public float boostMax = 4f;
     public float boostMeter;
-    float boostCooldown = 2f;
+    public float boostCooldown = 1f;
     public float cooldownMeter;
-    float boostExhaust = 3f;
+    bool onCooldown = false;
+    public float boostExhaust = 2f;
     public float exhaustMeter;
+    bool onExhaust = false;
     public float rotationSpeed = 90f;
     Vector3 rotationVector = Vector3.zero;
 
@@ -43,18 +45,45 @@ public class PlayerA1 : MonoBehaviour
 
     void PlayerMovement()
     {
+        //setting the max speed to what it normally is, immediately followed by boost so that it can be modified if you are boosting
         maxSpeed = defaultSpeed;
         
-        if (Keyboard.current.shiftKey.isPressed && cooldownMeter >= boostCooldown)
+        if (Keyboard.current.shiftKey.isPressed && cooldownMeter >= boostCooldown && exhaustMeter >= boostExhaust)
         {
             Boost();
         }
 
-        if (Keyboard.current.shiftKey.wasReleasedThisFrame && boostMeter < boostMax && exhaustMeter >= boostExhaust)
+        //Logic for cooldown mechanic
+        //if the boost button was released and you are not exhausted, it will put you into cooldown mode
+        if (Keyboard.current.shiftKey.wasReleasedThisFrame && exhaustMeter >= boostExhaust)
+        {
+            onCooldown = true;
+        }
+
+        //cooldown mode runs the cooldown method undil it is turned off, which it is within the method
+        if (onCooldown)
         {
             Cooldown();
         }
         
+        //Logic for exhaust mechanic
+        if (onExhaust)
+        {
+            Exhaust();
+        }
+
+        //when the exhaust is finished, boost can be charged
+        if (maxSpeed == defaultSpeed && boostMeter < boostMax && exhaustMeter >= boostExhaust)
+        {
+            boostMeter += Time.deltaTime;
+            //if that addition is over the max, set it to the max
+            if (boostMeter > boostMax)
+            {
+                boostMeter = boostMax;
+            }
+        }
+        
+        //Constantly calculating the acceleration and deceleration since this is modified by the boost mechanic
         currentAcceleration = maxSpeed / accelerationTime;
         deceleration =  maxSpeed / decelerationTime;
         
@@ -85,8 +114,7 @@ public class PlayerA1 : MonoBehaviour
         currentVelocity += accelerationDirection.normalized * (currentAcceleration * Time.deltaTime);
         
         //when no buttons are pressed, apply drag that decelerates the player
-        if (!Keyboard.current.wKey.isPressed && !Keyboard.current.aKey.isPressed && !Keyboard.current.dKey.isPressed &&
-            !Keyboard.current.sKey.isPressed)
+        if (!Keyboard.current.wKey.isPressed && !Keyboard.current.dKey.isPressed)
         {
             currentVelocity -= currentVelocity.normalized * (deceleration * Time.deltaTime);
         }
@@ -113,9 +141,9 @@ public class PlayerA1 : MonoBehaviour
     {
         boostMeter -= Time.deltaTime;
         maxSpeed = boostSpeed;
-        if (boostCooldown <= 0f)
+        if (boostMeter <= 0f)
         {
-            Exhaust();
+            onExhaust = true;
         }
     }
 
@@ -125,6 +153,7 @@ public class PlayerA1 : MonoBehaviour
         if (cooldownMeter <= 0f)
         {
             cooldownMeter = boostCooldown;
+            onCooldown = false;
         }
     }
 
@@ -134,6 +163,8 @@ public class PlayerA1 : MonoBehaviour
         if (exhaustMeter <= 0f)
         {
             exhaustMeter = boostExhaust;
+            onExhaust = false;
+            onCooldown = true;
         }
     }
     

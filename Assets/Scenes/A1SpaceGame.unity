@@ -147,6 +147,7 @@ MonoBehaviour:
   boostMeter: 0
   cooldownMeter: 0
   exhaustMeter: 0
+  rotationSpeed: 180
 --- !u!1001 &371863183
 PrefabInstance:
   m_ObjectHideFlags: 0

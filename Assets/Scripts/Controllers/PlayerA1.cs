@@ -49,6 +49,17 @@ public class PlayerA1 : MonoBehaviour
 
     void PlayerMovement()
     {
+        //SCREEN WRAPPING
+        if (transform.position.x > 9.5f || transform.position.x < -9.5f)
+        {
+            transform.position = new Vector2(-transform.position.x, transform.position.y);
+        }
+
+        if (transform.position.y > 5.5f || transform.position.y < -5.5f)
+        {
+            transform.position = new Vector2(transform.position.x, -transform.position.y);
+        }
+        
         //setting the max speed to what it normally is, immediately followed by boost so that it can be modified if you are boosting
         maxSpeed = defaultSpeed;
         

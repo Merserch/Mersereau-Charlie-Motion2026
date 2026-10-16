@@ -154,6 +154,7 @@ MonoBehaviour:
   onExhaust: 0
   rotationSpeed: 180
   fillColor: {fileID: 224433693}
+  boostSlider: {fileID: 1115135575}
 --- !u!1 &105937961
 GameObject:
   m_ObjectHideFlags: 0

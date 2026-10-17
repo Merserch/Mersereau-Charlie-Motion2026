@@ -15,6 +15,7 @@ public class PlayerA1 : MonoBehaviour
     public float boostSpeed = 3;
     public float boostMax = 4f;
     public float boostMeter;
+    public bool isBoosting = false;
     public float boostCooldown = 1f;
     public float cooldownMeter;
     public bool onCooldown = false;
@@ -25,6 +26,8 @@ public class PlayerA1 : MonoBehaviour
     Vector3 rotationVector = Vector3.zero;
     public Image fillColor;
     public Slider boostSlider;
+    public GameObject ejections;
+    
 
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -43,12 +46,16 @@ public class PlayerA1 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         PlayerMovement();
         Slider();
     }
 
     void PlayerMovement()
     {
+        //JETS RESET
+        ejections.transform.position = transform.position;
+        
         //SCREEN WRAPPING
         if (transform.position.x > 9.5f || transform.position.x < -9.5f)
         {
@@ -60,17 +67,31 @@ public class PlayerA1 : MonoBehaviour
             transform.position = new Vector2(transform.position.x, -transform.position.y);
         }
         
+        //RESET BUTTON
+        //There is a case where screen wrapping can get you stuck off screen. This is a small failsafe for easily fixing that in game.
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            transform.position = new Vector2(0, 0);
+        }
+        
         //setting the max speed to what it normally is, immediately followed by boost so that it can be modified if you are boosting
         maxSpeed = defaultSpeed;
         
-        if (Keyboard.current.shiftKey.isPressed && cooldownMeter >= boostCooldown && exhaustMeter >= boostExhaust)
+        if (Keyboard.current.shiftKey.isPressed && Keyboard.current.wKey.isPressed && cooldownMeter >= boostCooldown && exhaustMeter >= boostExhaust)
         {
+            isBoosting = true;
             Boost();
         }
 
         //Logic for cooldown mechanic
         //if the boost button was released and you are not exhausted, it will put you into cooldown mode
         if (Keyboard.current.shiftKey.wasReleasedThisFrame && exhaustMeter >= boostExhaust)
+        {
+            onCooldown = true;
+        }
+        
+        //if the boost button was released and you are not exhausted, it will put you into cooldown mode
+        if (Keyboard.current.wKey.wasReleasedThisFrame && Keyboard.current.shiftKey.isPressed)
         {
             onCooldown = true;
         }
@@ -113,22 +134,26 @@ public class PlayerA1 : MonoBehaviour
         {
             accelerationDirection += (transform.up * maxSpeed);
             //add upward acceleration
+            if (isBoosting)
+            {
+                ejections.transform.position = transform.position + (transform.up * -0.5f);
+            }
+            else
+            {
+                ejections.transform.position = transform.position + (transform.up * -0.2f);
+            }
         }
         if (Keyboard.current.aKey.isPressed)
         {
             Rotate(-transform.right);
             //add leftward acceleration
         }
-        if (Keyboard.current.sKey.isPressed)
-        {
-            accelerationDirection += (-transform.up * maxSpeed);
-            //add downward acceleration
-        }
         if (Keyboard.current.dKey.isPressed)
         {
             Rotate(transform.right);
             //add rightward acceleration
         }
+        //Removed backwards movement from S
         
         //apply all acceleration values in a normalized vector to the current velocity vector,
         //   multiplied by the amount of time we want it to take to reach the maximum speed of acceleration.
@@ -176,6 +201,7 @@ public class PlayerA1 : MonoBehaviour
 
     void Cooldown()
     {
+        isBoosting = false;
         cooldownMeter -= Time.deltaTime;
         if (cooldownMeter <= 0f)
         {
@@ -186,6 +212,7 @@ public class PlayerA1 : MonoBehaviour
 
     void Exhaust()
     {
+        isBoosting = false;
         exhaustMeter -= Time.deltaTime;
         if (exhaustMeter <= 0f)
         {

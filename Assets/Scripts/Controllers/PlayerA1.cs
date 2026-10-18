@@ -57,15 +57,14 @@ public class PlayerA1 : MonoBehaviour
         ejections.transform.position = transform.position;
         
         //SCREEN WRAPPING
-        if (transform.position.x > 9.5f || transform.position.x < -9.5f)
-        {
-            transform.position = new Vector2(-transform.position.x, transform.position.y);
-        }
-
-        if (transform.position.y > 5.5f || transform.position.y < -5.5f)
-        {
-            transform.position = new Vector2(transform.position.x, -transform.position.y);
-        }
+        if (transform.position.x > 9.5f)
+        { transform.position = new Vector2(-9.5f, transform.position.y); }
+        if (transform.position.x < -9.5f)
+        { transform.position = new Vector2(9.5f, transform.position.y); }
+        if (transform.position.y > 5.5f)
+        { transform.position = new Vector2(transform.position.x, -5.5f); }
+        if (transform.position.y < -5.5f)
+        { transform.position = new Vector2(transform.position.x, 5.5f); }
         
         //RESET BUTTON
         //There is a case where screen wrapping can get you stuck off screen. This is a small failsafe for easily fixing that in game.
@@ -134,15 +133,19 @@ public class PlayerA1 : MonoBehaviour
         {
             accelerationDirection += (transform.up * maxSpeed);
             //add upward acceleration
+            //Set the jet position poking out the back while holding W
             if (isBoosting)
             {
+                //poke out a lotta bit when boosting
                 ejections.transform.position = transform.position + (transform.up * -0.5f);
             }
             else
             {
+                //poke out a little bit when not boosting
                 ejections.transform.position = transform.position + (transform.up * -0.2f);
             }
         }
+        
         if (Keyboard.current.aKey.isPressed)
         {
             Rotate(-transform.right);

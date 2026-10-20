@@ -76,7 +76,10 @@ public class PlayerA1 : MonoBehaviour
         //setting the max speed to what it normally is, immediately followed by boost so that it can be modified if you are boosting
         maxSpeed = defaultSpeed;
         
-        if (Keyboard.current.shiftKey.isPressed && Keyboard.current.wKey.isPressed && cooldownMeter >= boostCooldown && exhaustMeter >= boostExhaust)
+        if (Keyboard.current.shiftKey.isPressed && 
+            Keyboard.current.wKey.isPressed && 
+            cooldownMeter >= boostCooldown && 
+            exhaustMeter >= boostExhaust)
         {
             isBoosting = true;
             Boost();
@@ -128,11 +131,12 @@ public class PlayerA1 : MonoBehaviour
         currentAcceleration = maxSpeed / accelerationTime;
         deceleration =  maxSpeed / decelerationTime;
         
+        //Set acceleration to zero by default
         Vector3 accelerationDirection = Vector3.zero;
         if (Keyboard.current.wKey.isPressed)
         {
-            accelerationDirection += (transform.up * maxSpeed);
-            //add upward acceleration
+            accelerationDirection += transform.up;
+            //add upward (forward) acceleration
             //Set the jet position poking out the back while holding W
             if (isBoosting)
             {
@@ -144,6 +148,11 @@ public class PlayerA1 : MonoBehaviour
                 //poke out a little bit when not boosting
                 ejections.transform.position = transform.position + (transform.up * -0.2f);
             }
+        }
+        else
+        {
+            //when W is not being pressed, apply drag that decelerates the player
+            currentVelocity -= currentVelocity.normalized * (deceleration * Time.deltaTime);
         }
         
         if (Keyboard.current.aKey.isPressed)
@@ -161,12 +170,6 @@ public class PlayerA1 : MonoBehaviour
         //apply all acceleration values in a normalized vector to the current velocity vector,
         //   multiplied by the amount of time we want it to take to reach the maximum speed of acceleration.
         currentVelocity += accelerationDirection.normalized * (currentAcceleration * Time.deltaTime);
-        
-        //when no buttons are pressed, apply drag that decelerates the player
-        if (!Keyboard.current.wKey.isPressed && !Keyboard.current.dKey.isPressed)
-        {
-            currentVelocity -= currentVelocity.normalized * (deceleration * Time.deltaTime);
-        }
         
         //move the player at the projected velocity, accounting for time
         transform.position = transform.position + currentVelocity * Time.deltaTime;
@@ -227,12 +230,10 @@ public class PlayerA1 : MonoBehaviour
     
     void Rotate(Vector3 direction)
     {
-        
         float rightTurn = VectorMath.VectorDot(direction, transform.right);
         
         if (rightTurn >= 0) 
         {
-            
             transform.eulerAngles -= Vector3.forward * (rotationSpeed * Time.deltaTime);
         }
         else

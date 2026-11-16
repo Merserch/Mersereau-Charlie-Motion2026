@@ -13,6 +13,8 @@ public class PlayerA2Controller : MonoBehaviour
     
     void Start()
     {
+        //ContactFilter2D filter = new ContactFilter2D();
+        
         midColour = midZone.GetComponent<SpriteRenderer>().color;
         myRB = GetComponent<Rigidbody2D>();
         myRB.interpolation = RigidbodyInterpolation2D.Interpolate;
@@ -21,6 +23,8 @@ public class PlayerA2Controller : MonoBehaviour
 
     void Update()
     {
+        
+        
         if (myRB.OverlapPoint(midZone.transform.position))
         {
             midColour = Color.green;
@@ -29,6 +33,7 @@ public class PlayerA2Controller : MonoBehaviour
         {
             midColour = Color.red;
         }
+
         
         if (Keyboard.current.wKey.isPressed)
         {

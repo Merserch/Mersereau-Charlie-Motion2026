@@ -17,8 +17,15 @@ public class PlayerController : MonoBehaviour
     //value that will go into linear dampening
     public float friction = 3f;
     public float landingDetectionLength;
+    public float landingDetectionWidth = 1;
     public LayerMask groundLayer;
     public bool lastFacingRight = true;
+    public float apexTime = 1f;
+    public float apexHeight = 2f;
+    private float gravity;
+    private float initialJumpVelocity;
+    private bool wasJumpTriggered = false;
+    
     
     
     public enum FacingDirection
@@ -34,10 +41,13 @@ public class PlayerController : MonoBehaviour
         myRB = GetComponent<Rigidbody2D>();
         //calculate the acceleration value
         acceleration = maxSpeed/accelerationTime;
+        
+        gravity = -2 * apexHeight/ Mathf.Pow(apexTime, 2);
+        initialJumpVelocity = 2 * apexHeight / apexTime;
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         //The input from the player needs to be determined and then passed in the to the MovementUpdate which should
         //manage the actual movement of the character.
@@ -52,9 +62,16 @@ public class PlayerController : MonoBehaviour
             //sets the input vallue to a right transform
             playerInput.x += 1f;
         }
-        
         MovementUpdate(playerInput);
         
+    }
+
+    void Update()
+    {
+        if (IsGrounded() && Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            wasJumpTriggered = true;
+        }
     }
 
     private void MovementUpdate(Vector2 playerInput)
@@ -74,13 +91,23 @@ public class PlayerController : MonoBehaviour
         }
 
         //normalize the speed to max speed if you go faster than it.
-        if (newVelocity.sqrMagnitude > maxSpeed * maxSpeed)
+        if (newVelocity.x > maxSpeed)
         {
-            newVelocity = newVelocity.normalized * maxSpeed;
+            newVelocity.x = maxSpeed;
+        }
+        
+        //apply gravity all the time
+        newVelocity.y += gravity * Time.deltaTime;
+        
+        //jump input
+        if (wasJumpTriggered)
+        {
+            //apply force to the rigidbody with the apexTime and apexHeight
+            newVelocity.y = initialJumpVelocity;
+            wasJumpTriggered = false;
         }
         
         myRB.linearVelocity = newVelocity;
-        
         
     }
 
@@ -98,14 +125,15 @@ public class PlayerController : MonoBehaviour
     public bool IsGrounded()
     {
         //get a origin point in relation to the player's position.
-        Vector2 lineEnd = myRB.transform.position - new Vector3(0, landingDetectionLength, 0);
+        Vector2 lineEnd = myRB.transform.position - new Vector3(0, 0, 0);
+        Vector2 boxSize = new Vector2(landingDetectionWidth, landingDetectionLength);
         
         //Test for seeing the length of the cast
         //Debug.DrawLine(myRB.transform.position, lineEnd, Color.red);
         
         //BoxCast, from position calculation above, a box size of one, rotated zero degrees, casting down,
         //a cast length of zero (so only what is within the box), and only detecting the custom ground layer.
-        if (Physics2D.BoxCast(lineEnd, Vector2.one, 0f, Vector2.down, 0f, groundLayer))
+        if (Physics2D.BoxCast(lineEnd, boxSize, 0f, Vector2.down, 0f, groundLayer))
         {
             //for testing
             //Debug.Log("detecting");
@@ -140,6 +168,9 @@ public class PlayerController : MonoBehaviour
     }
 
     
-
+// jumping position = (1/2 * gravity * current time ^2) + (initial jump velocity * current Time) + initial position
+// rearranged equations using apex height and apex time 
+// Gravity = -2 * apexHeight/((apedTime)^2)
+// Initial Jump Velocity = 2 * apexHeight / apexTime
     
 }

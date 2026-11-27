@@ -15,7 +15,6 @@ public class PlayerController : MonoBehaviour
     //calculated acceleration value
     private float acceleration;
     //value that will go into linear dampening
-    public float friction = 3f;
     public float landingDetectionLength;
     public float landingDetectionWidth = 1;
     public LayerMask groundLayer;
@@ -25,6 +24,9 @@ public class PlayerController : MonoBehaviour
     private float gravity;
     private float initialJumpVelocity;
     private bool wasJumpTriggered = false;
+    public float terminalVelocity = 1f;
+    public float cyoteTime = 0.5f;
+    private float cyoteTimer;
     
     
     
@@ -44,6 +46,7 @@ public class PlayerController : MonoBehaviour
         
         gravity = -2 * apexHeight/ Mathf.Pow(apexTime, 2);
         initialJumpVelocity = 2 * apexHeight / apexTime;
+        cyoteTimer = cyoteTime;
     }
 
     // Update is called once per frame
@@ -82,11 +85,11 @@ public class PlayerController : MonoBehaviour
         {
             //acceleration
             newVelocity += playerInput * (acceleration * Time.deltaTime);
-            myRB.linearDamping = 0;
+           
         }
         else
         {
-            myRB.linearDamping = friction;
+            
             
         }
 
@@ -94,6 +97,10 @@ public class PlayerController : MonoBehaviour
         if (newVelocity.x > maxSpeed)
         {
             newVelocity.x = maxSpeed;
+        }
+        if (newVelocity.x < -maxSpeed)
+        {
+            newVelocity.x = -maxSpeed;
         }
         
         //apply gravity all the time
@@ -105,6 +112,11 @@ public class PlayerController : MonoBehaviour
             //apply force to the rigidbody with the apexTime and apexHeight
             newVelocity.y = initialJumpVelocity;
             wasJumpTriggered = false;
+        }
+
+        if (newVelocity.y < -terminalVelocity)
+        {
+            newVelocity.y = -terminalVelocity;
         }
         
         myRB.linearVelocity = newVelocity;
@@ -135,12 +147,27 @@ public class PlayerController : MonoBehaviour
         //a cast length of zero (so only what is within the box), and only detecting the custom ground layer.
         if (Physics2D.BoxCast(lineEnd, boxSize, 0f, Vector2.down, 0f, groundLayer))
         {
+            if (cyoteTimer < cyoteTime)
+            {
+                cyoteTimer = cyoteTime;
+            }
             //for testing
             //Debug.Log("detecting");
             return true;
         }
         else
         {
+            if (cyoteTimer > 0f && myRB.linearVelocity.y <= 0f)
+            {
+                
+                cyoteTimer -= Time.deltaTime;
+                return true;
+            } 
+            if (myRB.linearVelocity.y > 0f)
+            {
+                cyoteTimer = 0f;
+            }
+            
             return false;
         }
         
